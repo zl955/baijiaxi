@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>吾家有喜 · 百天之喜</title>
+  <style>
+    :root {
+      --gold: #d4a24e;
+      --gold-deep: #b9873a;
+      --cream: #fdf8f0;
+      --warm: #fff4e6;
+      --ink: #5b4636;
+      --ink-soft: #8a7565;
+      --pink: #f3b8b0;
+      --peach: #f7c9a6;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Noto Sans SC", sans-serif;
+      background: linear-gradient(180deg, #fff9f0 0%, #fdeede 38%, #fff4e6 72%, #fbe9d5 100%);
+      color: var(--ink);
+      line-height: 1.7;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* 飘浮气球背景 */
+    .balloons {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .balloon {
+      position: absolute;
+      bottom: -160px;
+      width: 52px;
+      height: 64px;
+      border-radius: 50% 50% 50% 50% / 46% 46% 54% 54%;
+      opacity: 0.62;
+      animation: floatUp linear infinite;
+    }
+
+    .balloon::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      width: 2px;
+      height: 42px;
+      background: rgba(91, 70, 54, 0.35);
+      transform: translateX(-50%);
+    }
+
+    .balloon::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -12px;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 10px solid inherit;
+      transform: translateX(-50%);
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-55vh) rotate(4deg); }
+      100% { transform: translateY(-115vh) rotate(-3deg); }
+    }
+
+    /* 主容器 */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.78);
+      border-radius: 26px;
+      box-shadow: 0 18px 45px rgba(184, 135, 58, 0.14);
+      padding: 30px 22px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(212, 162, 78, 0.18);
+    }
+
+    /* 顶部装饰 */
+    .ribbon {
+      text-align: center;
+      margin-bottom: 6px;
+      color: var(--gold);
+      font-size: 26px;
+      letter-spacing: 6px;
+    }
+
+    .headline {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #c8953f;
+      margin: 4px 0 2px;
+    }
+
+    .subline {
+      text-align: center;
+      font-size: 15px;
+      color: var(--gold-deep);
+      letter-spacing: 5px;
+      margin-top: 4px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 18px 0 20px;
+      color: var(--gold);
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      height: 1px;
+      width: 64px;
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+
+    .divider::after {
+      background: linear-gradient(90deg, var(--gold), transparent);
+    }
+
+    /* 正文 */
+    .intro {
+      text-align: center;
+      font-size: 16px;
+      color: var(--ink);
+    }
+
+    .intro .big {
+      display: block;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 6px 0;
+      letter-spacing: 1px;
+    }
+
+    .intro .bless {
+      color: var(--ink-soft);
+      font-size: 15px;
+    }
+
+    /* 信息块 */
+    .info-block {
+      margin-top: 24px;
+      background: linear-gradient(135deg, #fffdf8, #fff7ea);
+      border-radius: 18px;
+      border: 1px solid rgba(212, 162, 78, 0.22);
+      padding: 18px 16px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .info-icon {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f6d9a8, #eec27e);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      box-shadow: 0 4px 10px rgba(212, 162, 78, 0.3);
+    }
+
+    .info-label {
+      font-size: 13px;
+      color: var(--ink-soft);
+      letter-spacing: 1px;
+    }
+
+    .info-value {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .info-value .small {
+      display: block;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--ink-soft);
+      margin-top: 2px;
+    }
+
+    /* 倒计时 */
+    .countdown {
+      margin-top: 22px;
+      text-align: center;
+    }
+
+    .countdown .tip {
+      font-size: 13px;
+      color: var(--ink-soft);
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .countdown-grid {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .count-item {
+      background: #fff;
+      border-radius: 14px;
+      padding: 10px 8px;
+      min-width: 58px;
+      box-shadow: 0 6px 16px rgba(184, 135, 58, 0.12);
+      border: 1px solid rgba(212, 162, 78, 0.18);
+    }
+
+    .count-num {
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gold-deep);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .count-unit {
+      display: block;
+      font-size: 11px;
+      color: var(--ink-soft);
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    /* 按钮 */
+    .actions {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #e6b45a, #cd953f);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(205, 149, 63, 0.35);
+    }
+
+    .btn-ghost {
+      background: #fff;
+      color: var(--gold-deep);
+      border: 1px solid rgba(212, 162, 78, 0.4);
+      box-shadow: 0 4px 12px rgba(184, 135, 58, 0.1);
+    }
+
+    .btn-ghost:hover {
+      background: #fffaf0;
+    }
+
+    /* 页脚 */
+    .footer {
+      text-align: center;
+      margin-top: 26px;
+      color: #c3a97f;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+
+    .footer .heart {
+      color: var(--pink);
+      animation: heartbeat 1.4s ease infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.22); }
+    }
+
+    /* 入场动画 */
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      animation: reveal 0.7s ease forwards;
+    }
+
+    .delay-1 { animation-delay: 0.15s; }
+    .delay-2 { animation-delay: 0.3s; }
+    .delay-3 { animation-delay: 0.45s; }
+    .delay-4 { animation-delay: 0.6s; }
+
+    @keyframes reveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 提示气泡 */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 34px;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(91, 70, 54, 0.9);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      letter-spacing: 1px;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 20;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 380px) {
+      .headline { font-size: 26px; }
+      .count-item { min-width: 50px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="balloons" id="balloons"></div>
+
+  <div class="container">
+    <div class="card">
+      <div class="ribbon reveal">❁ ✿ ❁</div>
+      <h1 class="headline reveal delay-1">吾家有喜 · 百天之喜</h1>
+      <div class="subline reveal delay-1">BABY'S 100 DAYS</div>
+
+      <div class="divider reveal delay-2">🎈</div>
+
+      <div class="intro reveal delay-2">
+        宝宝于6月末降生，转眼百日。
+        <span class="big">承蒙各位亲友挂念与祝福</span>
+        <span class="bless">特设家宴，诚邀大家欢聚一堂<br/>共同见证宝贝成长</span>
+      </div>
+
+      <div class="info-block reveal delay-3">
+        <div class="info-row">
+          <div class="info-icon">📅</div>
+          <div>
+            <div class="info-label">时间</div>
+            <div class="info-value">
+              2026年10月6日 中午 11:30
+              <span class="small">农历八月廿六</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div>
+            <div class="info-label">地点</div>
+            <div class="info-value">
+              海泉湾维景国际大酒店 · 香海轩一楼
+              <span class="small">《V01 V02》包间 · 地铁1号线白马河站 A/D口</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="countdown reveal delay-3">
+        <div class="tip">距离欢聚还有</div>
+        <div class="countdown-grid" id="countdown">
+          <div class="count-item"><span class="count-num" id="cd-d">--</span><span class="count-unit">天</span></div>
+          <div class="count-item"><span class="count-num" id="cd-h">--</span><span class="count-unit">时</span></div>
+          <div class="count-item"><span class="count-num" id="cd-m">--</span><span class="count-unit">分</span></div>
+          <div class="count-item"><span class="count-num" id="cd-s">--</span><span class="count-unit">秒</span></div>
+        </div>
+      </div>
+
+      <div class="actions reveal delay-4">
+        <a class="btn btn-primary" id="navBtn" href="#" target="_blank" rel="noopener">🧭 一键导航</a>
+        <button class="btn btn-ghost" id="calendarBtn">📆 添加到日历</button>
+        <button class="btn btn-ghost" id="shareBtn">💌 分享请柬</button>
+      </div>
+    </div>
+
+    <div class="footer reveal delay-4">
+      盼携家人光临，共享喜悦<span class="heart"> ❤ </span>✨
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // 地点信息
+    const PLACE = "青岛海泉湾维景国际大酒店";
+    const EVENT_TIME = new Date("2026-10-06T11:30:00+08:00").getTime();
+
+    // 生成飘浮气球
+    const balloonColors = ["#f3b8b0", "#f7c9a6", "#f6d9a8", "#eec27e", "#e8a8b8", "#cfe0d0"];
+    const balloonsEl = document.getElementById("balloons");
+    for (let i = 0; i < 14; i++) {
+      const b = document.createElement("div");
+      b.className = "balloon";
+      const color = balloonColors[i % balloonColors.length];
+      b.style.background = "radial-gradient(circle at 32% 30%, rgba(255,255,255,.9), " + color + ")";
+      b.style.left = (Math.random() * 92) + "%";
+      b.style.animationDuration = (14 + Math.random() * 12) + "s";
+      b.style.animationDelay = (Math.random() * 14) + "s";
+      b.style.transform = "scale(" + (0.7 + Math.random() * 0.7) + ")";
+      balloonsEl.appendChild(b);
+    }
+
+    // 倒计时
+    const cdD = document.getElementById("cd-d");
+    const cdH = document.getElementById("cd-h");
+    const cdM = document.getElementById("cd-m");
+    const cdS = document.getElementById("cd-s");
+
+    function pad(n) { return n < 10 ? "0" + n : "" + n; }
+
+    function updateCountdown() {
+      let diff = EVENT_TIME - Date.now();
+      if (diff < 0) {
+        cdD.textContent = "00"; cdH.textContent = "00";
+        cdM.textContent = "00"; cdS.textContent = "00";
+        return;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      cdD.textContent = pad(d);
+      cdH.textContent = pad(h);
+      cdM.textContent = pad(m);
+      cdS.textContent = pad(s);
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // 导航
+    function buildNavUrl() {
+      const q = encodeURIComponent(PLACE);
+      const ua = navigator.userAgent.toLowerCase();
+      if (/micromessenger/i.test(ua)) {
+        // 微信内打开走腾讯地图
+        return "https://apis.map.qq.com/uri/v1/search?keyword=" + q + "&referer=baijiaxi";
+      }
+      // 桌面/普通浏览器走高德
+      return "https://uri.amap.com/search?keyword=" + q + "&src=baijiaxi";
+    }
+    document.getElementById("navBtn").addEventListener("click", function (e) {
+      e.preventDefault();
+      const url = buildNavUrl();
+      if (/micromessenger/i.test(navigator.userAgent.toLowerCase())) {
+        window.location.href = url;
+      } else {
+        window.open(url, "_blank");
+      }
+    });
+
+    // 提示
+    let toastTimer;
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    // 添加到日历（下载 ICS 文件）
+    function downloadICS() {
+      const start = "20261006T033000Z"; // UTC = 北京时间 11:30
+      const end = "20261006T063000Z";
+      const ics = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//BaiJiaXi//CN",
+        "BEGIN:VEVENT",
+        "UID:" + Date.now() + "@baijiaxi",
+        "DTSTAMP:" + start,
+        "DTSTART:" + start,
+        "DTEND:" + end,
+        "SUMMARY:吾家有喜 · 百天之喜（百日宴）",
+        "LOCATION:青岛海泉湾维景国际大酒店 香海轩一楼 V01V02包间",
+        "DESCRIPTION:宝宝百日宴，诚邀您与家人光临！地铁1号线白马河站 A/D口",
+        "BEGIN:VALARM",
+        "TRIGGER:-PT1H",
+        "ACTION:DISPLAY",
+        "DESCRIPTION:百日宴提醒",
+        "END:VALARM",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+      const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "百日宴邀请.ics";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      showToast("已下载日历提醒，请打开文件添加");
+    }
+    document.getElementById("calendarBtn").addEventListener("click", downloadICS);
+
+    // 分享
+    document.getElementById("shareBtn").addEventListener("click", async function () {
+      const shareData = {
+        title: "吾家有喜 · 百天之喜",
+        text: "宝宝百日宴，诚邀您与家人光临！时间：2026年10月6日 11:30，地点：海泉湾维景国际大酒店。",
+        url: window.location.href
+      };
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+        } else if (navigator.clipboard) {
+          await navigator.clipboard.writeText(shareData.text + " " + shareData.url);
+          showToast("邀请文案已复制，快去分享吧");
+        } else {
+          showToast("请截图或长按页面分享");
+        }
+      } catch (err) {
+        if (err && err.name !== "AbortError") {
+          showToast("分享取消或不可用，请截图分享");
+        }
+      }
+    });
+  </script>
+</body>
+</html>
