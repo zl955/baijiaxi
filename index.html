@@ -444,8 +444,10 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // 地点信息
-    const PLACE = "青岛海泉湾维景国际大酒店";
+    // 地点信息（酒店在咸阳，紧邻西安地铁1号线白马河站）
+    const PLACE = "咸阳海泉湾维景国际大酒店";
+    const PLACE_ADDR = "陕西省咸阳市秦都区世纪大道中段（白马河地铁站旁）";
+    const PLACE_COORD = { lat: 34.3182, lng: 108.7229 };
     const EVENT_TIME = new Date("2026-10-06T11:30:00+08:00").getTime();
 
     // 生成飘浮气球
@@ -495,14 +497,28 @@
       return /micromessenger/i.test(navigator.userAgent.toLowerCase());
     }
 
+    function isMobile() {
+      return /Android|iPhone|iPad|iPod|Mobile|Mobi/i.test(navigator.userAgent);
+    }
+
     function buildNavUrl() {
-      const q = encodeURIComponent(PLACE);
+      const name = encodeURIComponent(PLACE);
+      const addr = encodeURIComponent(PLACE_ADDR);
+      const lat = PLACE_COORD.lat;
+      const lng = PLACE_COORD.lng;
+
       if (isWeChat()) {
-        // 微信内打开走腾讯地图
-        return "https://apis.map.qq.com/uri/v1/search?keyword=" + q + "&referer=baijiaxi";
+        // 微信内：腾讯地图，直接定位到酒店（coord 格式为 纬度,经度）
+        return "https://apis.map.qq.com/uri/v1/marker?marker=coord:" + lat + "," + lng + ";title:" + name + ";addr:" + addr + "&referer=baijiaxi";
       }
-      // 普通浏览器/桌面走高德
-      return "https://uri.amap.com/search?keyword=" + q + "&src=baijiaxi";
+
+      if (isMobile()) {
+        // 手机：高德地图，直接导航到酒店
+        return "https://uri.amap.com/navigation?to=" + lng + "," + lat + "," + name + "&mode=car&src=baijiaxi&coordinate=gaode&callnative=1";
+      }
+
+      // 电脑：高德地图，直接显示酒店位置标记
+      return "https://uri.amap.com/marker?position=" + lng + "," + lat + "&name=" + name + "&src=baijiaxi&coordinate=gaode";
     }
 
     document.getElementById("navBtn").addEventListener("click", function (e) {
