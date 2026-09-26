@@ -491,34 +491,47 @@
     setInterval(updateCountdown, 1000);
 
     // 导航
+    function isWeChat() {
+      return /micromessenger/i.test(navigator.userAgent.toLowerCase());
+    }
+
     function buildNavUrl() {
       const q = encodeURIComponent(PLACE);
-      const ua = navigator.userAgent.toLowerCase();
-      if (/micromessenger/i.test(ua)) {
+      if (isWeChat()) {
         // 微信内打开走腾讯地图
         return "https://apis.map.qq.com/uri/v1/search?keyword=" + q + "&referer=baijiaxi";
       }
-      // 桌面/普通浏览器走高德
+      // 普通浏览器/桌面走高德
       return "https://uri.amap.com/search?keyword=" + q + "&src=baijiaxi";
     }
+
     document.getElementById("navBtn").addEventListener("click", function (e) {
       e.preventDefault();
-      const url = buildNavUrl();
-      if (/micromessenger/i.test(navigator.userAgent.toLowerCase())) {
-        window.location.href = url;
-      } else {
-        window.open(url, "_blank");
-      }
+      // 用当前页直接跳转，避免被浏览器当成弹窗拦截
+      window.location.href = buildNavUrl();
     });
 
     // 提示
     let toastTimer;
-    function showToast(msg) {
+    function showToast(msg, duration) {
       const toast = document.getElementById("toast");
       toast.textContent = msg;
       toast.classList.add("show");
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), duration || 2200);
+    }
+
+    // 复制文本（兼容非 HTTPS 环境和微信）
+    function copyText(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-999px";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
     }
 
     // 添加到日历（下载 ICS 文件）
@@ -559,25 +572,30 @@
 
     // 分享
     document.getElementById("shareBtn").addEventListener("click", async function () {
-      const shareData = {
-        title: "吾家有喜 · 百天之喜",
-        text: "宝宝百日宴，诚邀您与家人光临！时间：2026年10月6日 11:30，地点：海泉湾维景国际大酒店。",
-        url: window.location.href
-      };
-      try {
-        if (navigator.share) {
-          await navigator.share(shareData);
-        } else if (navigator.clipboard) {
-          await navigator.clipboard.writeText(shareData.text + " " + shareData.url);
-          showToast("邀请文案已复制，快去分享吧");
-        } else {
-          showToast("请截图或长按页面分享");
-        }
-      } catch (err) {
-        if (err && err.name !== "AbortError") {
-          showToast("分享取消或不可用，请截图分享");
-        }
+      const title = "吾家有喜 · 百天之喜";
+      const text = "宝宝百日宴，诚邀您与家人光临！时间：2026年10月6日 11:30，地点：海泉湾维景国际大酒店（地铁1号线白马河站 A/D口）。";
+      const url = window.location.href;
+
+      // 微信内置浏览器不支持系统分享按钮，只能引导使用右上角菜单
+      if (isWeChat()) {
+        showToast("请点右上角「···」→ 发送给朋友", 3200);
+        return;
       }
+
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: title, text: text, url: url });
+        } catch (err) {
+          if (err && err.name !== "AbortError") {
+            copyText(text + " " + url);
+            showToast("分享失败，已复制邀请文案", 2600);
+          }
+        }
+        return;
+      }
+
+      copyText(text + " " + url);
+      showToast("邀请文案已复制，快去分享吧", 2600);
     });
   </script>
 </body>
